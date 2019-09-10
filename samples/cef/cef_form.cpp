@@ -110,6 +110,15 @@ bool CefForm::OnClicked(ui::EventArgs* msg)
 	{
 		cef_control_->Refresh();
 	}
+	else if (name == L"btn_calljs")
+	{
+		cef_control_->CallJSFunction(L"showJsMessage", L"{\"message\":\"我是文信周\"}", ToWeakCallback([this](const std::string& json_result) {
+
+			//std::wstring message = nbase::UTF8ToUTF16(values["message"].asString());
+			//ShowMsgBox(nullptr, MsgboxCallback(), L"ccc", false);
+
+		}), L"");
+	}
 
 	return true;
 }
@@ -131,7 +140,7 @@ void CefForm::OnLoadEnd(int httpStatusCode)
 	FindControl(L"btn_forward")->SetEnabled(cef_control_->CanGoForward());
 
 	// 注册一个方法提供前端调用
-	cef_control_->RegisterCppFunc(L"ShowMessageBox", ToWeakCallback([this](const std::string& params, nim_cef::ReportResultFunction callback) {
+	cef_control_->RegisterCppFunc(L"showCppMessage", ToWeakCallback([this](const std::string& params, nim_cef::ReportResultFunction callback) {
 		shared::Toast::ShowToast(nbase::UTF8ToUTF16(params), 3000, GetHWND());
 		callback(false, R"({ "message": "Success." })");
 	}));

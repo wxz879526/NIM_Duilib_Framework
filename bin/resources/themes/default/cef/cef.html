@@ -5,10 +5,26 @@
   const showMessage = () => {
     const message = document.getElementById('message_input').value
     // 调用一个 C++ 注册过的方法
-    NimCefWebInstance.call('ShowMessageBox', { message }, (error, result) => {
+    NimCefWebInstance.call('showCppMessage', { message }, (error, result) => {
       console.log(result)
     })
   }
+  
+  (() => {
+    /*
+     * 注册一个回调函数，用于在 C++ 应用中调用
+     * param[in] showJsMessage 回调函数的名称，C++ 会使用该名称来调用此回调函数
+     * param[in] callback 回调函数执行体
+     */
+    NimCefWebInstance.register('showJsMessage', (arguments) => {
+		console.log("from c++xx")
+        const receiveMessageInput = document.getElementById('message_output')
+        receiveMessageInput.value = arguments.message
+        return {
+            message: 'showJsMessage function was executed, this message return by JavaScript.'
+        }
+    })
+})()
 </script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 </head>
@@ -16,12 +32,17 @@
 <div class="row">
   <div class="col-sm-6 col-md-6 col-md-offset-3 col-sm-offset-3">
     <h1 class="text-center">CEF 控件示例</h1>
-    <h3 class="text-center">演示如何在 Duilib 中使用 CEF 控件</h3>
+    <h3 class="text-center">演示JavaScript调用C++</h3>
     <div class="input-group">
       <input type="text" id="message_input" class="form-control" placeholder="输入内容发送给 C++ 接收">
       <span class="input-group-btn">
         <button class="btn btn-default" type="button" onclick="showMessage()">发送</button>
       </span>
+    </div><!-- /input-group -->
+	<br>
+	<h3 class="text-center">演示c++调用JavaScript</h3>
+	<div class="output-group">
+      <input type="text" id="message_output" class="form-control" placeholder="C++ 调用js 输出">
     </div><!-- /input-group -->
   </div><!-- /.col-lg-6 -->
 </div><!-- /.row -->
